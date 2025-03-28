@@ -1,82 +1,104 @@
 #include <stdio.h>
+#include <stdbool.h>
+int main() {
+    int id, stock = 0, cantidad, opc;
+    float precio = 0, total_ganancias = 0, venta;
+    char nombre[30];
+    bool Registro=false;
 
-int main(int argc, char *argv[]) {
-    const float sprite = 61.7, cocacola = 41, pepsi = 20.50;
-    float dinero, cambio, dinerof, precio = 0.0;
-    int continuar = 1, opc1;
-
-    while (continuar == 1) {
-        printf("\nMáquina Expendedora en dólares\n");
-        printf("1. Sprite - $61.7\n");
-        printf("2. CocaCola - $41.0\n");
-        printf("3. Pepsi - $20.5\n");
+    do {
+        printf("\nMenú de Opciones:\n");
+        printf("1. Ingresar el producto\n");
+        printf("2. Vender producto\n");
+        printf("3. Reabastecer producto\n");
+        printf("4. Mostrar información del producto\n");
+        printf("5. Mostrar total de ganancias\n");
+        printf("6. Salir\n");
         printf("Seleccione una opción: ");
-        scanf("%d", &opc1);
+        scanf("%d", &opc); // el & simpre se pone menos en el fgets
 
-        if (opc1 == 1 || opc1 == 2 || opc1 == 3) {
-            if (opc1 == 1) precio = sprite;
-            else if (opc1 == 2) precio = cocacola;
-            else if (opc1 == 3) precio = pepsi;
 
-            printf("Ingrese su dinero: ");
-            scanf("%f", &dinero);
+        switch(opc) {
+            case 1:
+                printf("Ingrese el ID del producto: ");
+                scanf("%d", &id);
 
-            while (dinero < 0) {
-                printf("Error: El dinero no puede ser negativo. Intente de nuevo.\n");
-                printf("Ingrese su dinero: ");
-                scanf("%f", &dinero);
-            }
+                printf("Ingrese el nombre del producto: ");
+                fflush(stdin);//limpia el cache
+                fgets(nombre, 30, stdin); //fgets lee cadenas y el stdin entrada estandar lee espacios no como scanf que no los lee
+            do {
+                    printf("Ingrese el stock: ");
+                    scanf("%d", &stock);
+                    printf("Ingrese el precio unitario del producto: ");
+                    scanf("%f", &precio);
+                    if (stock <= 0 || precio <=0) {
+                        printf("Ninguno de los dos valores puede ser 0 o negativo, intente denuevo.\n");
+                    }
+                } while (stock < 0 || precio <=0);
+                 Registro=true;
+                break;
 
-            while (dinero < precio) {
-                printf("Dinero insuficiente. Faltan $%.2f\n", precio - dinero);
-                printf("Ingrese el dinero que falta: ");
-                scanf("%f", &dinerof);
-
-                while (dinerof < 0) {
-                    printf("Error: El dinero ingresado no puede ser negativo. Intente de nuevo.\n");
-                    printf("Ingrese el dinero que falta: ");
-                    scanf("%f", &dinerof);
+            case 2:
+            if (stock <= 0) {
+                    printf("No hay stock para vender\n");
+                    break;
                 }
+                do {
+                    printf("Ingrese la cantidad a vender: ");
+                    scanf("%d", &cantidad);
+                    if ( cantidad <=0) {
+                        printf("Debe vender minimo una unidad, tampoco se perimiten numeros negativos\n");
+                    } 
+                    if (cantidad > stock) {
+                        printf("Stock insuficiente\n");
+                    }
+                } while (cantidad < 1 || cantidad > stock);
 
-                dinero += dinerof;
+                venta = cantidad * precio;
+                printf("el precio de venta es de:%.2f\n",venta);
+                total_ganancias += venta; // += va acumulando la varibale QUE ESTA en la DERECHA - DENTRO de la variable que esta a la IZQUIERDA
+                stock-=cantidad; ; // -= va restando la varibale QUE ESTA en la DERECHA - DENTRO de la variable que esta a la IZQUIERDA
+                printf("el nuevo stock es: %d\n", stock);
+                break;
+
+            case 3:
+                cantidad=0;
+                    printf("Ingrese la cantidad a agregar al stock: ");
+                    scanf("%d", &cantidad);
+                    do {
+                        printf("Agrege minimo una unidad.\n");
+                        printf("Ingrese la cantidad a agregar al stock: ");
+                    scanf("%d", &cantidad);
+                    } while (cantidad <= 0); 
+                stock += cantidad;
+                printf("Stock actualizado. Nuevo stock: %d\n", stock);
+                break;
+
+            case 4:
+            if (Registro==false){
+                printf("No hay ningun producto.");
+                break;
             }
+                printf("\nInformación del producto:\n");
+                printf("ID: %d\n", id);
+                printf("Nombre: %s\n", nombre);
+                printf("Stock disponible: %d\n", stock);
+                printf("Precio unitario: $%.2f\n", precio);
+                break;
 
-            cambio = dinero - precio;
-            printf("Pago completado. Cambio total: $%.2f\n", cambio);
-            int cambioCentavos = (int)(cambio * 100);
+            case 5:
+                printf("Total de ganancias acumuladas: $%.2f\n", total_ganancias);
+                break;
 
-            int monedas10 = cambioCentavos / 1000; 
-            cambioCentavos %= 1000;
+            case 6:
+                printf("Saliendo del programa...\n");
+                break;
 
-            int monedas5 = cambioCentavos / 500; 
-            cambioCentavos %= 500;
-
-            int monedas1 = cambioCentavos / 100; 
-            cambioCentavos %= 100;
-
-            int monedas50 = cambioCentavos / 50; 
-            cambioCentavos %= 50;
-
-            int monedas25 = cambioCentavos / 25; 
-            cambioCentavos %= 25;
-
-            int monedas10cent = cambioCentavos / 10; 
-            cambioCentavos %= 10;
-
-            printf("Cambio en monedas:\n");
-            if (monedas10 > 0) printf("Monedas de $10.00: %d\n", monedas10);
-            if (monedas5 > 0) printf("Monedas de $5.00: %d\n", monedas5);
-            if (monedas1 > 0) printf("Monedas de $1.00: %d\n", monedas1);
-            if (monedas50 > 0) printf("Monedas de $0.50: %d\n", monedas50);
-            if (monedas25 > 0) printf("Monedas de $0.25: %d\n", monedas25);
-            if (monedas10cent > 0) printf("Monedas de $0.10: %d\n", monedas10cent);
-        } else {
-            printf("Error. Opción no válida. Intente de nuevo.\n");
+            default:
+                printf("Intente nuevamente.\n");
+                break;
         }
-
-        printf("\n¿Desea pedir otra bebida? 1) Sí, 2) No: ");
-        scanf("%d", &continuar);
-    }
+    } while (opc != 6);
 
     return 0;
 }
